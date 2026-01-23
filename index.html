@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realove</title>
+    <title>欢迎访问我的网站</title>
     <style>
-        /* 这里是简单的样式，让页面看起来更整洁 */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: flex;
@@ -15,6 +14,7 @@
             margin: 0;
             background-color: #f0f2f5;
             color: #333;
+            flex-direction: column; /* 让内容垂直排列 */
         }
         .container {
             text-align: center;
@@ -22,6 +22,7 @@
             padding: 2rem 4rem;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
         h1 {
             color: #2c3e50;
@@ -41,16 +42,59 @@
             font-size: 0.9rem;
             font-weight: bold;
         }
+        /* 音乐播放器样式 */
+        .audio-player {
+            margin-top: 20px;
+            text-align: center;
+        }
+        audio {
+            outline: none;
+            border-radius: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .note {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Rae</h1>
-        <p>如果你看到这个网站，说明已经部署完成啦！Day1。</p>
+        <h1>欢迎来到我的网站！🎉</h1>
+        <p>背景音乐应该正在播放中...</p>
         <div class="status">状态：运行正常</div>
     </div>
 
-</body>
+    <div class="audio-player">
+        <audio id="bgm" controls loop autoplay>
+            <source src="Class Historian.mp3" type="audio/mpeg">
+            您的浏览器不支持音频元素。
+        </audio>
+        <div class="note">如果音乐没有自动播放，请点击上面的播放按钮 ▶️</div>
+    </div>
 
+    <script>
+        // 尝试通过脚本触发播放，并调节音量
+        window.onload = function() {
+            var audio = document.getElementById("bgm");
+            audio.volume = 0.5; // 设置音量为 50%，防止吓到访客
+            
+            // 尝试播放
+            var playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // 自动播放成功
+                    console.log("自动播放成功");
+                })
+                .catch(error => {
+                    // 自动播放被阻止
+                    console.log("自动播放被浏览器拦截，等待用户交互");
+                });
+            }
+        };
+    </script>
+
+</body>
 </html>
