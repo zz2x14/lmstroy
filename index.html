@@ -8,47 +8,104 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: flex;
-            justify-content: center; /* 修正了原代码的下划线笔误 */
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f0f2f5;
             color: #333;
             padding: 20px;
             box-sizing: border-box;
+
+            /* --- ✨ 新功能：背景图片设置 --- */
+            /* 请确保您上传了一张背景图，命名为 background.jpg */
+            background-image: url('background.png'); 
+            background-size: cover; /* 让背景图铺满屏幕 */
+            background-position: center; /* 居中显示 */
+            background-repeat: no-repeat; /* 不重复 */
+            background-attachment: fixed; /* 背景固定，不随滚动条滚动 */
         }
 
-        /* 新增：主卡片容器，包含左侧照片和右侧内容 */
+        /* 主卡片容器 */
         .main-wrapper {
             display: flex;
-            flex-direction: row; /* 横向排列 */
-            background: white;
+            flex-direction: row;
+            /* 为了防止背景图太花导致文字看不清，这里保持白色背景，并加了一点透明度效果(可选) */
+            background: rgba(255, 255, 255, 0.95); 
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* 阴影加深一点，更有立体感 */
             max-width: 900px;
             width: 100%;
-            align-items: center; /* 垂直居中 */
-            gap: 40px; /* 照片和文字的间距 */
+            align-items: center;
+            gap: 40px;
+            
+            /* 增加一点玻璃磨砂效果（仅在支持的浏览器显示） */
+            backdrop-filter: blur(10px);
         }
 
-        /* 新增：左侧照片区域 */
+        /* --- ✨ 左侧照片区域（含切换按钮） --- */
         .photo-section {
-            flex-shrink: 0; /* 防止照片被压缩 */
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column; /* 让照片和按钮垂直排列 */
+            align-items: center;
+            gap: 15px;
         }
-        .photo-section img {
+        
+        .photo-container {
             width: 280px;
             height: 280px;
-            object-fit: cover; /* 保持图片比例不拉伸 */
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden; /* 保证图片圆角不穿帮 */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background-color: #ddd; /* 图片加载前的占位色 */
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
+            transition: opacity 0.3s ease; /* 切换时的淡入淡出效果 */
+        }
+
+        /* 切换按钮组 */
+        .photo-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-switch {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn-switch:hover {
+            background-color: #34495e;
+        }
+
+        .btn-switch:active {
+            transform: scale(0.95);
+        }
+
+        /* 照片计数器 */
+        .photo-counter {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: bold;
         }
 
         /* 右侧内容区域 */
         .content-section {
-            flex: 1; /* 占据剩余空间 */
-            text-align: center; /* 内容居中 */
+            flex: 1;
+            text-align: center;
         }
 
         h1 {
@@ -60,17 +117,10 @@
             color: #666;
             font-size: 1.1rem;
             line-height: 1.6;
+            margin-bottom: 2rem; /* 调整间距 */
         }
-        .status {
-            display: inline-block;
-            margin: 1.5rem 0;
-            padding: 0.5rem 1rem;
-            background-color: #e1f5fe;
-            color: #0288d1;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
+
+        /* 删除了 .status 相关的样式 */
 
         /* 音乐播放器样式 */
         .audio-player {
@@ -90,16 +140,16 @@
             margin-top: 8px;
         }
 
-        /* 手机端适配：屏幕变窄时改为上下排列 */
+        /* 手机端适配 */
         @media (max-width: 768px) {
             .main-wrapper {
                 flex-direction: column;
                 padding: 30px 20px;
-                gap: 20px;
+                gap: 25px;
             }
-            .photo-section img {
-                width: 200px;
-                height: 200px;
+            .photo-container {
+                width: 220px;
+                height: 220px;
             }
         }
     </style>
@@ -109,14 +159,21 @@
     <div class="main-wrapper">
         
         <div class="photo-section">
-            <img src="unnamed.jpeg" alt="Rae的照片">
+            <div class="photo-container">
+                <img id="current-photo" src="" alt="我的照片">
+            </div>
+            
+            <div class="photo-controls">
+                <button class="btn-switch" onclick="prevPhoto()">❮ 上一张</button>
+                <span class="photo-counter" id="photo-index">1 / 1</span>
+                <button class="btn-switch" onclick="nextPhoto()">下一张 ❯</button>
+            </div>
         </div>
 
         <div class="content-section">
             <h1>Rae！🎉</h1>
             <p>如果看到该条代表我已经部署成功啦！Day1。</p>
-            <div class="status">状态：运行正常</div>
-
+            
             <div class="audio-player">
                 <audio id="bgm" controls loop autoplay>
                     <source src="Class Historian.mp3" type="audio/mpeg">
@@ -129,24 +186,61 @@
     </div>
 
     <script>
-        // 你的原始脚本逻辑保持不变
+        // ==========================================
+        // ✨ 请在这里手动填写您的照片文件名
+        // ==========================================
+        const photoList = [
+            "photo1.png",
+            "photo2.png"
+        ];
+        // ==========================================
+
+        let currentIndex = 0;
+        const imgElement = document.getElementById("current-photo");
+        const counterElement = document.getElementById("photo-index");
+
+        // 初始化显示第一张
+        function showPhoto(index) {
+            if (photoList.length === 0) return;
+            
+            // 确保索引在有效范围内
+            if (index < 0) {
+                currentIndex = photoList.length - 1;
+            } else if (index >= photoList.length) {
+                currentIndex = 0;
+            } else {
+                currentIndex = index;
+            }
+
+            // 更新图片和计数器
+            imgElement.src = photoList[currentIndex];
+            counterElement.innerText = (currentIndex + 1) + " / " + photoList.length;
+        }
+
+        // 上一张
+        function prevPhoto() {
+            showPhoto(currentIndex - 1);
+        }
+
+        // 下一张
+        function nextPhoto() {
+            showPhoto(currentIndex + 1);
+        }
+
+        // 页面加载完成后初始化
         window.onload = function() {
+            showPhoto(0);
+
+            // 音乐播放逻辑 (保持不变)
             var audio = document.getElementById("bgm");
             audio.volume = 0.5; 
-            
             var playPromise = audio.play();
             if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    console.log("自动播放成功");
-                })
-                .catch(error => {
-                    console.log("自动播放被浏览器拦截，等待用户交互");
-                });
+                playPromise.then(_ => console.log("自动播放成功"))
+                           .catch(error => console.log("自动播放需交互"));
             }
         };
     </script>
 
 </body>
 </html>
-
-
